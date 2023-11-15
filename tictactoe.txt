@@ -1,0 +1,91 @@
+from gamestatus import GameStatus
+
+def newgame():
+    return [[None, None, None], [None, None, None], [None, None, None]]
+
+# this method takes a board as a parameter and returns a string
+# representing the status of the game
+# the status can be one of the following:
+#  Does python have enums. In C# I would use an enum here
+#   "X wins"
+#   "O wins"
+#   "Draw"
+#   "X Turn"
+#   "O Turn"
+def check_winner(board):
+    return "X wins"
+# this method taked a board as a 2d array and returns the current state of the x position
+# as a binary number with 000000000
+def get_x_binary(board):
+    # create a 9 bit binary number
+    result = 0b000000000
+    for i in range(0, 3):
+        for j in range(0, 3):
+            if board[i][j] == "x":
+                # set the bit at the correct position
+                result = result | (1 << (i * 3 + j))
+    return result
+# this method taked a board and returns the current state of the o position
+# as a binary number 000000000
+def get_o_binary(board):
+        # create a 9 bit binary number
+    result = 0b000000000
+    for i in range(0, 3):
+        for j in range(0, 3):
+            if board[i][j] == "o":
+                # set the bit at the correct position
+                result = result | (1 << (i * 3 + j))
+    return result
+# this method compares the binary representation of the x position to the
+# binary representation of the winning positions
+def check_x_win(x_binary):
+    # get the winning positions
+    winning_positions = winning_combinations()
+    # iterate over the winning positions
+    for winning_position in winning_positions:
+        # compare the winning position to the x position
+        if (x_binary & winning_position) == winning_position:
+            return True
+    return False
+
+# i cannot take credit for this solution to check for a winner. I did however research the different
+# ways it could be done. Most of them were n^2. This one is constant time. I found it on stack overflow
+# and really enjoyed reading about it. I will explain my understanding below
+# https://stackoverflow.com/a/33456912
+# there are 8 possible winning positions and we can represent them as binary numbers using 9 bits
+# the first 3 bits represent the top row, the middle 3 represent the middle row and the last 3 the bottom row
+# 000000111 - Win on the bottom row
+# 000111000 - Win on the middle row
+# 111000000 - Win on the top row
+# 100100100 - Win on the left column
+# 010010010 - Win on the middle column
+# 001001001 - Win on the right column
+# 100010001 - Win on the top left to bottom right diagonal
+# 001010100 - Win on the top right to bottom left diagonal
+# using the board state of a given player in binary we can compare it to the winning positions
+# with a bitwise and. If the result matches the winning position then we have a winner
+# The board states will be represented internally as a binary number with 9 bits
+# Responses from the API will be in the form of a 2d array
+
+# this method returns a list of the winning positions
+def winning_combinations():
+    return [0b000000111, 0b000111000, 0b111000000, 0b100100100, 0b010010010, 0b001001001, 0b100010001, 0b001010100]
+
+# testing:
+board = [
+    [None, None, None],
+    [None, None, None],
+    [None, None, None]
+]
+# the bin method turns a number into a binary string
+print(bin(get_x_binary(board)))
+print(bin(get_o_binary(board)))
+
+board = [
+    ['x', None, None],
+    [None, 'x', None],
+    [None, None, 'x']
+]
+print(bin(get_x_binary(board)))
+print(bin(get_o_binary(board)))
+print(check_x_win(get_x_binary(board)))
