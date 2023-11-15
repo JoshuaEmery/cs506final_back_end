@@ -16,11 +16,13 @@ def check_winner(board):
     return "X wins"
 # this method taked a board as a 2d array and returns the current state of the x position
 # as a binary number with 000000000
+
 def get_x_binary(board):
     # create a 9 bit binary number
     result = 0b000000000
     for i in range(0, 3):
         for j in range(0, 3):
+            # short version without the comments
             if board[i][j] == "x":
                 # set the bit at the correct position
                 result = result | (1 << (i * 3 + j))
@@ -33,8 +35,17 @@ def get_o_binary(board):
     for i in range(0, 3):
         for j in range(0, 3):
             if board[i][j] == "o":
-                # set the bit at the correct position
-                result = result | (1 << (i * 3 + j))
+                # we found an o
+                # lets calculate the bit position of the o
+                # i is the row and j is the column
+                # for each row we multiply by 3 and add the column
+                bit_position = i * 3 + j
+                # we used the bit position to shift the number 1 that many positions to the left
+                # this gives us a bit mask with a 1 in the correct position
+                bit_mask = 1 << bit_position
+                # the bit mask is the used with bitwise or to flip the bit in the position to 1 of result
+                # because of bitwise or the other bits in result will not be affected
+                result = result | bit_mask
     return result
 # this method compares the binary representation of the x position to the
 # binary representation of the winning positions

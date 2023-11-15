@@ -1,30 +1,32 @@
-from flask import Flask, jsonify, request
-
+from flask import Flask, request, jsonify
+from tictactoe import TicTacToe
+from gamestatus import GameStatus
 app = Flask(__name__)
 
-def new_board():
-    return [["", "", ""], ["", "", ""], ["", "", ""]]
-
-def evaluate_board(board):
-    # Add logic to evaluate the board state
-    pass
-
-def make_move(board, player):
-    # Add logic to make a move
-    pass
-
-@app.route('/newgame', methods=['GET'])
+@app.route('/new_game', methods=['GET'])
 def new_game():
-    return jsonify(new_board())
+    game = TicTacToe()
+    return jsonify({'board': game.board, 'status': GameStatus.PLAYING.value})
 
-@app.route('/move', methods=['POST'])
-def move():
+@app.route('/make_move', methods=['POST'])
+def make_move():
+    data = request.get_json()
+    print(data)
+    board = data['board']
+    turn = data['turn']
+    game = TicTacToe(board, turn)
+    best_move = game.generate_move()
+    board = game.make_move(best_move[0], best_move[1])
+    status = game.check_game_over()
+    return jsonify({'board': board, 'best_move': best_move, 'status': status.value})
+
+@app.route('/check_status', methods=['POST'])
+def check_status():
     data = request.get_json()
     board = data['board']
-    player = data['player']  # 'X' or 'O'
-    new_board = make_move(board, player)
-    status = evaluate_board(new_board)
-    return jsonify({"board": new_board, "status": status})
+    game = TicTacToe(board)
+    status = game.check_game_over()
+    return jsonify({'status': status.name})
 
 if __name__ == '__main__':
     app.run(debug=True)

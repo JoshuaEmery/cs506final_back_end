@@ -6,3 +6,4 @@ class GameStatus(Enum):
     DRAW = "Draw"
     X_TURN = "X Turn"
     O_TURN = "O Turn"
+    PLAYING = "Playing"
