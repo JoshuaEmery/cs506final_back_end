@@ -1,7 +1,10 @@
 from flask import Flask, request, jsonify
 from tictactoe import TicTacToe
 from gamestatus import GameStatus
+from flask_cors import CORS
 app = Flask(__name__)
+
+CORS(app)
 
 @app.route('/new_game', methods=['GET'])
 def new_game():
